@@ -1,0 +1,43 @@
+import pandas as pd
+
+# Massas molares (g/mol)
+molar_masses = {
+    'NH4H2PO4': 115.03,
+    'ZnO': 81.38,
+    'Na2CO3': 105.99,
+    'Ni(NO3)2': 182.70  # anidra
+}
+
+# Composição base
+base_masses = {
+    'NH4H2PO4': 14.26,
+    'ZnO': 4.8,
+    'Na2CO3': 4.1,
+    'Ni(NO3)2': 0.63
+}
+
+# Função para calcular mols e mol%
+def calculate_mol_percent(mass_dict):
+    mols = {k: mass_dict[k] / molar_masses[k] for k in mass_dict}
+    total_mol = sum(mols.values())
+    mol_percent = {k: (mol / total_mol) * 100 for k, mol in mols.items()}
+    return pd.DataFrame({
+        'Massa (g)': mass_dict,
+        'Mols': mols,
+        'Mol %': mol_percent
+    })
+
+# Gera variações alterando Ni(NO3)2
+ni_masses = [0.2, 0.4, 0.63, 0.8, 1.0]  # g
+variations = []
+
+for ni_mass in ni_masses:
+    mass_variant = base_masses.copy()
+    mass_variant['Ni(NO3)2'] = ni_mass
+    df = calculate_mol_percent(mass_variant)
+    df['Variação Ni(NO3)2 (g)'] = ni_mass
+    variations.append(df)
+
+# Combina todas as variações em uma planilha
+df_final = pd.concat(variations).reset_index().rename(columns={'index': 'Componente'})
+print(df_final.round(3))
