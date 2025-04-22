@@ -1,4 +1,6 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 
 # Massas molares (g/mol)
 molar_masses = {
@@ -41,3 +43,44 @@ for ni_mass in ni_masses:
 # Combina todas as variações em uma planilha
 df_final = pd.concat(variations).reset_index().rename(columns={'index': 'Componente'})
 print(df_final.round(3))
+
+# Criação do triângulo de Arkel-Ketelaar
+fig, ax = plt.subplots(figsize=(8, 7))
+
+# Coordenadas dos vértices do triângulo
+vertices = {
+    "Iônico": (0, 0),
+    "Metálico": (1, 0),
+    "Covalente": (0.5, 0.866)  # altura de triângulo equilátero com lado 1
+}
+
+# Desenhar triângulo
+triangle = plt.Polygon(list(vertices.values()), closed=True, fill=None, edgecolor='black', linewidth=2)
+ax.add_patch(triangle)
+
+# Adicionar os nomes dos vértices
+for label, (x, y) in vertices.items():
+    ax.text(x, y + 0.05, label, fontsize=12, ha='center', va='bottom', weight='bold')
+
+# Posicionamento de alguns materiais cerâmicos no triângulo
+materials = {
+    "NaCl": (0.15, 0.1),            # Fortemente iônico
+    "Al₂O₃": (0.35, 0.3),           # Iônico-covalente
+    "SiO₂": (0.45, 0.5),            # Covalente com caráter iônico
+    "BN (hex)": (0.52, 0.65),       # Mais covalente
+    "ZrO₂": (0.3, 0.25),            # Entre Al₂O₃ e NaCl
+}
+
+# Plotar os materiais
+for mat, (x, y) in materials.items():
+    ax.plot(x, y, 'o', color='red')
+    ax.text(x + 0.02, y, mat, fontsize=10, va='center', ha='left')
+
+# Ajustes do gráfico
+ax.set_xlim(-0.1, 1.1)
+ax.set_ylim(-0.1, 1)
+ax.axis('off')
+ax.set_title("Triângulo de Arkel-Ketelaar com Exemplos de Materiais Cerâmicos", fontsize=14, weight='bold')
+
+plt.tight_layout()
+plt.show()
